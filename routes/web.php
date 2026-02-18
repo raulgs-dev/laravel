@@ -1,28 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-// 1. Importamos los Controladores (los "cerebros" de cada módulo)
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\AuthController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
+// Autenticación
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Cuando entres a la página principal, te redirige a Clientes
+// Página principal
 Route::get('/', function () {
-    return redirect('/clientes'); 
+    return redirect('/clientes');
 });
 
-// Definimos las rutas automáticas (CRUD) para cada módulo
-Route::resource('clientes', ClienteController::class);
-Route::resource('productos', ProductoController::class);
-Route::resource('proveedores', ProveedorController::class);
-Route::resource('empleados', EmpleadoController::class);
-Route::resource('categorias', CategoriaController::class);
+// Rutas protegidas con autenticación
+Route::middleware('auth')->group(function () {
+    Route::resource('clientes', ClienteController::class);
+    Route::resource('productos', ProductoController::class);
+    Route::resource('proveedores', ProveedorController::class);
+    Route::resource('empleados', EmpleadoController::class);
+    Route::resource('categorias', CategoriaController::class);
+});
